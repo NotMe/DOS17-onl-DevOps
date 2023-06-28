@@ -1,1 +1,398 @@
-
+1
+notme@ubuntu-study:~$ sudo timedatectl set-timezone Europe/Minsk
+notme@ubuntu-study:~$ sudo locale-gen ru_RU.UTF-8
+notme@ubuntu-study:~$ sudo update-locale LANG=ru_RU.UTF-8
+notme@ubuntu-study:~$ tail -1 /etc/update-motd.d/00-header
+printf "Welcome to ubuntu-study %s (%s %s %s)\n" "$DISTRIB_DESCRIPTION" "$(uname -o)" "$(uname -r)" "$(uname -m)"
+ 
+ 
+[notme@centos-study ~]# timedatectl set-timezone Europe/Minsk
+[notme@centos-study ~]# localectl set-locale LANG=ru_RU.UTF-8
+[notme@centos-study ~]# cat /etc/motd
+Welcome to centos-study
+ 
+ 
+ 
+2
+notme@ubuntu-study:~$ uname -a
+Linux ubuntu-study 5.4.0-152-generic #169-Ubuntu SMP Tue Jun 6 22:23:09 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+ 
+ 
+[notme@centos-study ~]$ uname -a
+Linux centos-study 3.10.0-1160.92.1.el7.x86_64 #1 SMP Tue Jun 20 11:48:01 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+ 
+ 
+ 
+3
+notme@ubuntu-study:~$ lsmod > /tmp/lsmod.info
+notme@ubuntu-study:~$ cat /tmp/lsmod.info
+Module                  Size  Used by
+dm_multipath           32768  0
+scsi_dh_rdac           16384  0
+scsi_dh_emc            16384  0
+scsi_dh_alua           20480  0
+binfmt_misc            24576  1
+input_leds             16384  0
+joydev                 24576  0
+serio_raw              20480  0
+qemu_fw_cfg            20480  0
+mac_hid                16384  0
+sch_fq_codel           20480  2
+msr                    16384  0
+ramoops                28672  0
+reed_solomon           24576  1 ramoops
+efi_pstore             16384  0
+ip_tables              32768  0
+x_tables               40960  1 ip_tables
+autofs4                45056  2
+btrfs                1265664  0
+zstd_compress         167936  1 btrfs
+raid10                 61440  0
+raid456               155648  0
+async_raid6_recov      24576  1 raid456
+async_memcpy           20480  2 raid456,async_raid6_recov
+async_pq               24576  2 raid456,async_raid6_recov
+async_xor              20480  3 async_pq,raid456,async_raid6_recov
+async_tx               20480  5 async_pq,async_memcpy,async_xor,raid456,async_raid6_recov
+xor                    24576  2 async_xor,btrfs
+raid6_pq              114688  4 async_pq,btrfs,raid456,async_raid6_recov
+libcrc32c              16384  2 btrfs,raid456
+raid1                  45056  0
+raid0                  24576  0
+multipath              20480  0
+linear                 20480  0
+hid_generic            16384  0
+usbhid                 57344  0
+hid                   131072  2 usbhid,hid_generic
+bochs_drm              16384  0
+drm_vram_helper        20480  1 bochs_drm
+ttm                   106496  1 drm_vram_helper
+psmouse               155648  0
+virtio_net             57344  0
+net_failover           20480  1 virtio_net
+failover               16384  1 net_failover
+virtio_scsi            24576  2
+drm_kms_helper        184320  3 bochs_drm
+syscopyarea            16384  1 drm_kms_helper
+sysfillrect            16384  1 drm_kms_helper
+sysimgblt              16384  1 drm_kms_helper
+fb_sys_fops            16384  1 drm_kms_helper
+drm                   495616  5 drm_kms_helper,drm_vram_helper,bochs_drm,ttm
+i2c_piix4              28672  0
+pata_acpi              16384  0
+floppy                 81920  0
+ 
+ 
+[notme@centos-study ~]$ lsmod > /tmp/lsmod.info
+[notme@centos-study ~]$ cat /tmp/lsmod.info
+Module                  Size  Used by
+ip6t_rpfilter          12595  1
+ip6t_REJECT            12625  2
+nf_reject_ipv6         13717  1 ip6t_REJECT
+ipt_REJECT             12541  2
+nf_reject_ipv4         13373  1 ipt_REJECT
+xt_conntrack           12760  11
+ebtable_nat            12807  1
+ebtable_broute         12731  1
+bridge                155432  1 ebtable_broute
+stp                    12976  1 bridge
+llc                    14552  2 stp,bridge
+ip6table_nat           12864  1
+nf_conntrack_ipv6      18935  7
+nf_defrag_ipv6         35104  1 nf_conntrack_ipv6
+nf_nat_ipv6            14131  1 ip6table_nat
+ip6table_mangle        12700  1
+ip6table_security      12710  1
+ip6table_raw           12683  1
+iptable_nat            12875  1
+nf_conntrack_ipv4      19149  6
+nf_defrag_ipv4         12729  1 nf_conntrack_ipv4
+nf_nat_ipv4            14115  1 iptable_nat
+nf_nat                 26583  2 nf_nat_ipv4,nf_nat_ipv6
+iptable_mangle         12695  1
+iptable_security       12705  1
+iptable_raw            12678  1
+nf_conntrack          143360  6 nf_nat,nf_nat_ipv4,nf_nat_ipv6,xt_conntrack,nf_conntrack_ipv4,nf_conntrack_ipv6
+ip_set                 45799  0
+ebtable_filter         12827  1
+ebtables               35009  3 ebtable_broute,ebtable_nat,ebtable_filter
+ip6table_filter        12815  1
+ip6_tables             26912  5 ip6table_filter,ip6table_mangle,ip6table_security,ip6table_nat,ip6table_raw
+iptable_filter         12810  1
+sg                     40719  0
+pcspkr                 12718  0
+joydev                 17389  0
+virtio_balloon         18015  0
+i2c_piix4              22401  0
+ip_tables              27126  5 iptable_security,iptable_filter,iptable_mangle,iptable_nat,iptable_raw
+xfs                  1014152  2
+libcrc32c              12644  3 xfs,nf_nat,nf_conntrack
+sd_mod                 46281  3
+crc_t10dif             12912  1 sd_mod
+sr_mod                 22416  0
+crct10dif_generic      12647  1
+crct10dif_common       12595  2 crct10dif_generic,crc_t10dif
+cdrom                  46696  1 sr_mod
+ata_generic            12923  0
+pata_acpi              13053  0
+virtio_net             27994  0
+net_failover           18147  1 virtio_net
+failover               13374  1 net_failover
+virtio_scsi            18463  2
+bochs_drm              23971  1
+drm_kms_helper        186531  1 bochs_drm
+syscopyarea            12529  1 drm_kms_helper
+sysfillrect            12701  1 drm_kms_helper
+sysimgblt              12640  1 drm_kms_helper
+fb_sys_fops            12703  1 drm_kms_helper
+ttm                   100769  1 bochs_drm
+drm                   468454  4 ttm,bochs_drm,drm_kms_helper
+ata_piix               35052  0
+libata                247190  3 pata_acpi,ata_generic,ata_piix
+virtio_pci             22985  0
+serio_raw              13434  0
+virtio_ring            22991  4 virtio_net,virtio_pci,virtio_balloon,virtio_scsi
+virtio                 14959  4 virtio_net,virtio_pci,virtio_balloon,virtio_scsi
+drm_panel_orientation_quirks    17180  1 drm
+floppy                 73520  0
+dm_mirror              22326  0
+dm_region_hash         20813  1 dm_mirror
+dm_log                 18411  2 dm_region_hash,dm_mirror
+dm_mod                128595  8 dm_log,dm_mirror
+ 
+ 
+ 
+4
+notme@ubuntu-study:~$ lscpu
+Architecture:                    x86_64
+CPU op-mode(s):                  32-bit, 64-bit
+Byte Order:                      Little Endian
+Address sizes:                   40 bits physical, 48 bits virtual
+CPU(s):                          2
+On-line CPU(s) list:             0,1
+Thread(s) per core:              1
+Core(s) per socket:              2
+Socket(s):                       1
+NUMA node(s):                    1
+Vendor ID:                       GenuineIntel
+CPU family:                      15
+Model:                           6
+Model name:                      Common KVM processor
+Stepping:                        1
+CPU MHz:                         3911.986
+BogoMIPS:                        7823.97
+Hypervisor vendor:               KVM
+Virtualization type:             full
+L1d cache:                       64 KiB
+L1i cache:                       64 KiB
+L2 cache:                        8 MiB
+L3 cache:                        16 MiB
+NUMA node0 CPU(s):               0,1
+Vulnerability Itlb multihit:     KVM: Vulnerable
+Vulnerability L1tf:              Mitigation; PTE Inversion
+Vulnerability Mds:               Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+Vulnerability Meltdown:          Mitigation; PTI
+Vulnerability Mmio stale data:   Unknown: No mitigations
+Vulnerability Retbleed:          Not affected
+Vulnerability Spec store bypass: Vulnerable
+Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:        Mitigation; Retpolines, STIBP disabled, RSB filling, PBRSB-eIBRS Not affected
+Vulnerability Srbds:             Not affected
+Vulnerability Tsx async abort:   Not affected
+Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx lm constant_tsc nopl xtopology cpuid tsc_known_freq pni cx16 x2ap
+                                 ic hypervisor lahf_lm cpuid_fault pti
+ 
+notme@ubuntu-study:~$ sudo dmidecode --type 17
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 2.8 present.
+ 
+Handle 0x1100, DMI type 17, 40 bytes
+Memory Device
+        Array Handle: 0x1000
+        Error Information Handle: Not Provided
+        Total Width: Unknown
+        Data Width: Unknown
+        Size: 2048 MB
+        Form Factor: DIMM
+        Set: None
+        Locator: DIMM 0
+        Bank Locator: Not Specified
+        Type: RAM
+        Type Detail: Other
+        Speed: Unknown
+        Manufacturer: QEMU
+        Serial Number: Not Specified
+        Asset Tag: Not Specified
+        Part Number: Not Specified
+        Rank: Unknown
+        Configured Memory Speed: Unknown
+        Minimum Voltage: Unknown
+        Maximum Voltage: Unknown
+        Configured Voltage: Unknown
+ 
+ 
+[notme@centos-study ~]$ lscpu
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                1
+On-line CPU(s) list:   0
+Thread(s) per core:    1
+Core(s) per socket:    1
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+CPU family:            15
+Model:                 6
+Model name:            Common KVM processor
+Stepping:              1
+CPU MHz:               3911.986
+BogoMIPS:              7823.97
+Hypervisor vendor:     KVM
+Virtualization type:   full
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              4096K
+L3 cache:              16384K
+NUMA node0 CPU(s):     0
+Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx lm constant_tsc nopl xtopology eagerfpu pni cx16 x2apic hypervisor lahf_lm rsb_ctxsw
+ 
+[notme@centos-study ~]# dmidecode --type 17
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 2.8 present.
+ 
+Handle 0x1100, DMI type 17, 40 bytes
+Memory Device
+        Array Handle: 0x1000
+        Error Information Handle: Not Provided
+        Total Width: Unknown
+        Data Width: Unknown
+        Size: 2048 MB
+        Form Factor: DIMM
+        Set: None
+        Locator: DIMM 0
+        Bank Locator: Not Specified
+        Type: RAM
+        Type Detail: Other
+        Speed: Unknown
+        Manufacturer: QEMU
+        Serial Number: Not Specified
+        Asset Tag: Not Specified
+        Part Number: Not Specified
+        Rank: Unknown
+        Configured Memory Speed: Unknown
+        Minimum Voltage: Unknown
+        Maximum Voltage: Unknown
+        Configured Voltage: Unknown
+ 
+5
+notme@ubuntu-study:~$ df -h
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                               941M     0  941M   0% /dev
+tmpfs                              198M  1.1M  197M   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv   15G  4.6G  9.4G  33% /
+tmpfs                              986M     0  986M   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                              986M     0  986M   0% /sys/fs/cgroup
+/dev/loop0                          64M   64M     0 100% /snap/core20/1950
+/dev/loop1                          50M   50M     0 100% /snap/snapd/18357
+/dev/loop2                          64M   64M     0 100% /snap/core20/1828
+/dev/loop4                          54M   54M     0 100% /snap/snapd/19457
+/dev/loop3                          92M   92M     0 100% /snap/lxd/24061
+/dev/sda2                          2.0G  108M  1.7G   6% /boot
+tmpfs                              198M     0  198M   0% /run/user/1000
+ 
+ 
+[notme@centos-study ~]$ df -h
+Filesystem               Size  Used Avail Use% Mounted on
+devtmpfs                 908M     0  908M   0% /dev
+tmpfs                    919M     0  919M   0% /dev/shm
+tmpfs                    919M  8.5M  911M   1% /run
+tmpfs                    919M     0  919M   0% /sys/fs/cgroup
+/dev/mapper/centos-root   29G  1.6G   28G   6% /
+/dev/sda1               1014M  194M  821M  20% /boot
+tmpfs                    184M     0  184M   0% /run/user/1000
+ 
+ 
+ 
+6
+notme@ubuntu-study:~$ ip a
+...
+3: ens19: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether ea:8c:15:27:95:93 brd ff:ff:ff:ff:ff:ff
+ 
+ 
+[notme@centos-study ~]$ ip a
+...
+3: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc pfifo_fast state DOWN group default qlen 1000
+    link/ether d2:18:b9:a5:7f:c6 brd ff:ff:ff:ff:ff:ff
+ 
+ 
+ 
+7
+notme@ubuntu-study:~$ free
+              total        used        free      shared  buff/cache   available
+Mem:        2018384      165796     1148168        1044      704420     1700032
+Swap:       2097148           0     2097148
+ 
+ 
+[notme@centos-study ~]$ free
+              total        used        free      shared  buff/cache   available
+Mem:        1881784      143544     1610416        8684      127824     1595136
+Swap:       2097148           0     2097148
+ 
+ 
+ 
+8
+notme@ubuntu-study:~$ sudo adduser new_admin_user
+notme@ubuntu-study:~$ usermod -aG sudo new_admin_user
+notme@ubuntu-study:~$ ssh-keygen -t rsa
+notme@ubuntu-study:~$ ssh-copy-id -i new_admin_user_public.pub new_admin_user@localhost
+notme@ubuntu-study:~$ tail -3 /etc/ssh/sshd_config
+Match User new_admin_user
+    PasswordAuthentication no
+    AuthenticationMethods publickey
+notme@ubuntu-study:~$ sudo systemctl restart ssh
+ 
+ 
+[root@centos-study notme]# adduser new_admin_user
+[root@centos-study notme]# passwd new_admin_user
+[root@centos-study notme]# gpasswd -a new_admin_user wheel
+[root@centos-study notme]# ssh-keygen -t rsa
+[root@centos-study notme]# ssh-copy-id -i new_admin_user_public.pub new_admin_user@localhost
+[root@centos-study notme]# tail -3 /etc/ssh/sshd_config
+Match User new_admin_user
+    PasswordAuthentication no
+    AuthenticationMethods publickey
+[new_admin_user@centos-study ~]$ chmod 700 .ssh/
+[new_admin_user@centos-study ~]$ chmod 600 .ssh/authorized_keys
+[root@centos-study notme]# service sshd restart
+ 
+ 
+ 
+9
+notme@ubuntu-study:~$ ls /lib/modules/5.4.0-152-generic/kernel/fs/
+9p    afs     befs            btrfs       cifs    dlm    f2fs      fscache  hfs      isofs  lockd  nfs_common  nls    omfs       pstore  quota     shiftfs.ko  udf
+adfs  aufs    bfs             cachefiles  coda    efs    fat       fuse     hfsplus  jffs2  minix  nfsd        ntfs   orangefs   qnx4    reiserfs  sysv        ufs
+affs  autofs  binfmt_misc.ko  ceph        cramfs  erofs  freevxfs  gfs2     hpfs     jfs    nfs    nilfs2      ocfs2  overlayfs  qnx6    romfs     ubifs       xfs
+ 
+ 
+[root@centos-study notme]# ls /lib/modules/3.10.0-1160.el7.x86_64/kernel/fs/
+binfmt_misc.ko.xz  btrfs  cachefiles  ceph  cifs  cramfs  dlm  exofs  ext4  fat  fscache  fuse  gfs2  isofs  jbd2  lockd  mbcache.ko.xz  nfs  nfs_common  nfsd  nls  overlayfs  pstore  squashfs  udf  xfs
+ 
+ 
+ 
+10
+root@ubuntu-study:/home/notme# tail -10 newIso/preseed/default_admin_user.seed
+d-i passwd/root-login boolean false
+d-i passwd/user-fullname string default_admin_user
+d-i passwd/username string default_admin_user
+d-i passwd/user-password-crypted password $6$ONf5M3F1u$bpljc9f1SPy1w4J2br5BWbE38lPlbBGgjbkJ6MnrvQK2kUfFyT/r0p.R22FFPMAc61B9BD/UWcXoui4qXInx01
+ 
+debconf-get-selections | grep openssh
+openssh-server  ssh/vulnerable_host_keys    note
+openssh-server  ssh/use_old_init_script boolean true
+openssh-server  ssh/encrypted_host_key_but_no_keygen    note
+openssh-server  ssh/disable_cr_auth boolean false
