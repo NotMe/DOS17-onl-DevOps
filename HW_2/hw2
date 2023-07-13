@@ -13,7 +13,7 @@ tmpfs                             tmpfs     986M     0  986M   0% /sys/fs/cgroup
 /dev/loop3                        squashfs   64M   64M     0 100% /snap/core20/1828
 /dev/loop4                        squashfs   54M   54M     0 100% /snap/snapd/19457
 tmpfs                             tmpfs     198M     0  198M   0% /run/user/1000
-![hw_2.1] (https://github.com/NotMe/DOS17-onl-DevOps/blob/main/HW_2/hw_2.1.png "hw_2.1.png") 
+ 
 notme@ubuntu-study:$ sudo fdisk /dev/sdb
 
 Welcome to fdisk (util-linux 2.34).
