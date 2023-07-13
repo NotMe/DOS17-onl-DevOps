@@ -1,1 +1,41 @@
+*****1*****
+#!/bin/bash
 
+free -h | awk {'print $6'} | sed 's/available/Свободно/g' | sed 's/Gi/Гб/g' | column -t
+
+echo ' '
+mpstat | awk {'print $3,$4,$5,$6,$7,$8,$9,$10,$11,$12'} | sed 's/CPU/ЦП/g' | sed 's/usr/польз/g' | sed 's/sys/система/g' | column -t
+
+echo ' '
+ip -4 address | grep /24 | sed  's/inet/IP Адрес/g'
+
+
+*****2*****
+sudo ./hw3_2.sh new_user
+
+#!/bin/bash
+
+sudo useradd -m $1
+sysinfo=/home/$1/sysinfo.info;
+echo ====****==== >> $sysinfo
+lscpu >> $sysinfo
+echo ====****==== >> $sysinfo
+lsblk >> $sysinfo
+echo ====****==== >> $sysinfo
+uname >> $sysinfo
+echo ====****==== >> $sysinfo
+df >> $sysinfo
+
+
+*****3*****
+notme@ubuntu-study:~/hw3$ touch immortalfile
+notme@ubuntu-study:~/hw3$ sudo chattr +i immortalfile
+notme@ubuntu-study:~/hw3$ sudo rm /home/notme/hw3/immortalfile
+rm: cannot remove '/home/notme/hw3/immortalfile': Operation not permitted
+
+
+*****4*****
+Создаётся пустое окружение (текущее окружение игнорируется)
+Запускается оболочка bash, якобы происходит загрузка ОС
+Выполняется команда echo hello_there!
+Создаётся файл file.log в который перенаправляется вывод при вызове команды echo hello_there! > file.log
