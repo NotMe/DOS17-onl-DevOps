@@ -1,0 +1,134 @@
+*****1*****
+Отобразить все процессы в системе
+notme@ubuntu-study:~/hw4$ ps ax
+    PID TTY      STAT   TIME COMMAND
+      1 ?        Ss     0:06 /sbin/init maybe-ubiquity
+      2 ?        S      0:00 [kthreadd]
+      3 ?        I<     0:00 [rcu_gp]
+      4 ?        I<     0:00 [rcu_par_gp]
+      6 ?        I<     0:00 [kworker/0:0H-kblockd]
+      8 ?        I<     0:00 [mm_percpu_wq]
+      9 ?        S      0:00 [ksoftirqd/0]
+……………………………………
+……………………………………
+196915 ?        S      0:00 sleep 1
+ 196916 pts/0    R+     0:00 ps ax
+
+
+*****2*****
+Запустить бесконечный процесс в фоновом режиме
+notme@ubuntu-study:~/hw4$ cat hw4_2.sh
+#!/bin/bash
+x=2
+while [ $x -gt 1 ]
+do
+  echo "$x" >> hw4.log
+  sleep 5
+  x=$(( $x + 1 ))
+done
+
+notme@ubuntu-study:~/hw4$ ./hw4_2.sh &
+[2] 200766
+
+
+*****3*****
+Убедиться, что процесс продолжил работу после завершения сессии
+notme@ubuntu-study:~/hw4$ ps axu
+……………………………………
+notme     200766  0.0  0.1   7024  3484 ?        S    14:10   0:00 /bin/bash ./hw4_2.sh
+……………………………………
+notme     204219  0.0  0.0   5476   520 ?        S    14:19   0:00 sleep 1
+notme     204220  0.0  0.1   8888  3252 pts/2    R+   14:19   0:00 ps axu
+
+
+*****4*****
+Убить процесс, запущенный в фоновом режиме
+notme@ubuntu-study:~/hw4$ kill 200766
+
+
+*****5*****
+Написать свой сервис под управлением systemd, добавить его в автозагрузку (можно использовать процесс из п.2
+notme@ubuntu-study:~/hw4$ cat /etc/systemd/system/hw4_5.service
+[Unit]
+Description=counter
+
+[Service]
+User=notme
+WorkingDirectory=/home/notme/hw4
+ExecStart=/bin/bash /home/notme/hw4/hw4_2.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+notme@ubuntu-study:~/hw4$ sudo systemctl enable hw4_5.service
+Created symlink /etc/systemd/system/multi-user.target.wants/hw4_5.service → /etc/systemd/system/hw4_5.service.
+
+
+*****6*****
+Посмотреть логи своего сервиса.
+notme@ubuntu-study:~/hw4$ journalctl | grep hw4_5
+Jul 13 14:34:22 ubuntu-study sudo[208708]:    notme : TTY=pts/1 ; PWD=/home/notme/hw4 ; USER=root ; COMMAND=/usr/bin/cp hw4_5.service /etc/systemd/system/
+Jul 13 14:35:00 ubuntu-study polkitd(authority=local)[692]: Operator of unix-process:208741:36588121 successfully authenticated as unix-user:notme to gain ONE-SHOT authorization for action org.freedesktop.systemd1.manage-units for system-bus-name::1.141 [systemctl start hw4_5.service] (owned by unix-user:notme)
+……………………………………
+Jul 13 14:39:10 ubuntu-study sudo[208966]:    notme : TTY=pts/1 ; PWD=/home/notme/hw4 ; USER=root ; COMMAND=/usr/bin/systemctl enable hw4_5.service
+Jul 13 14:40:29 ubuntu-study polkitd(authority=local)[692]: Operator of unix-process:209025:36621610 successfully authenticated as unix-user:notme to gain ONE-SHOT authorization for action org.freedesktop.systemd1.manage-units for system-bus-name::1.157 [systemctl start hw4_5.service] (owned by unix-user:notme)
+
+
+*****7*****
+Написать скрипт, который выводит следующую информацию (можно переиспользовать предыдущее дз):
+кол-во процессов запущенных из под текущего пользователя
+load average за 15 минут
+кол-во свободной памяти
+свободное место в рутовом разделе “/”
+notme@ubuntu-study:~/hw4$ cat hw4_7.sh
+#!/bin/bash
+
+date +"%Y-%m-%d %H:%M:%S"
+
+echo -e '\n'notme process count:
+ps -u "notme" | wc -l
+
+echo -e '\n'memory usage:
+free
+
+echo -e '\n'cpu utilization of the last 15 min:
+cat /proc/loadavg | awk {'print $3'}
+
+echo -e '\n'usage /
+df -hT / | awk {'print $4,$5,$6,$7'} | column -t
+
+
+*****8*****
+Добавить в cron задачу, которая будет каждые 10 минут писать в файл результаты выполнения скрипта из п.7
+notme@ubuntu-study:~/hw4$ crontab -l
+
+*/10 * * * * /bin/bash /home/notme/hw4/hw4_7.sh >> /home/notme/hw4/hw4_8.log
+
+
+*****9*****
+сделать п. 5 для node-exporter https://github.com/prometheus/node_exporter
+notme@ubuntu-study:~/hw4$ wget https://github.com/prometheus/node_exporter/releases/download/v1.6.0/node_exporter-1.6.0.linux-amd64.tar.gz
+notme@ubuntu-study:~/hw4$ tar xvfz node_exporter-1.6.0.linux-amd64.tar.gz
+notme@ubuntu-study:~/hw4$ cd node_exporter-1.6.0.linux-amd64/
+notme@ubuntu-study:~/hw4/node_exporter-1.6.0.linux-amd64$ sudo cp node_exporter /usr/local/bin
+sudo useradd --no-create-home --shell /bin/false node_exporter
+sudo nano /etc/systemd/system/node_exporter.service
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+
+
+sudo systemctl enable node_exporter
+sudo systemctl start node_exporter
+
