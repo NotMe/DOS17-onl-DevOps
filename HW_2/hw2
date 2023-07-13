@@ -1,1 +1,120 @@
+*****1*****
+notme@ubuntu-study:$ df -Th
+Filesystem                        Type      Size  Used Avail Use% Mounted on
+udev                              devtmpfs  941M     0  941M   0% /dev
+tmpfs                             tmpfs     198M  1.1M  197M   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv ext4       15G  4.6G  9.4G  33% /
+tmpfs                             tmpfs     986M     0  986M   0% /dev/shm
+tmpfs                             tmpfs     5.0M     0  5.0M   0% /run/lock
+tmpfs                             tmpfs     986M     0  986M   0% /sys/fs/cgroup
+/dev/loop2                        squashfs   92M   92M     0 100% /snap/lxd/24061
+/dev/loop1                        squashfs   50M   50M     0 100% /snap/snapd/18357
+/dev/loop0                        squashfs   64M   64M     0 100% /snap/core20/1950
+/dev/loop3                        squashfs   64M   64M     0 100% /snap/core20/1828
+/dev/loop4                        squashfs   54M   54M     0 100% /snap/snapd/19457
+tmpfs                             tmpfs     198M     0  198M   0% /run/user/1000
+![hw_2.1] (./hw_2.1.png "hw_2.1.png") 
+notme@ubuntu-study:$ sudo fdisk /dev/sdb
+
+Welcome to fdisk (util-linux 2.34).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0xe13ed367.
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1): 1
+First sector (2048-4194303, default 2048):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-4194303, default 4194303):
+
+Created a new partition 1 of type 'Linux' and of size 2 GiB.
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+
+notme@ubuntu-study:~$ sudo mkfs.ext4 /dev/sdb1
+mke2fs 1.45.5 (07-Jan-2020)
+Discarding device blocks: done
+Creating filesystem with 524032 4k blocks and 131072 inodes
+Filesystem UUID: 47762c7c-5b2c-44ff-8f0d-2701b6af6a4e
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (8192 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+
+notme@ubuntu-study:~$ sudo mount /dev/sdb1 /home/
+notme@ubuntu-study:~$ df
+Filesystem                        1K-blocks    Used Available Use% Mounted on
+udev                                 963076       0    963076   0% /dev
+tmpfs                                201840    1048    200792   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv  15371208 4774392   9794208  33% /
+tmpfs                               1009192       0   1009192   0% /dev/shm
+tmpfs                                  5120       0      5120   0% /run/lock
+tmpfs                               1009192       0   1009192   0% /sys/fs/cgroup
+/dev/sda2                           1992552  110216   1761096   6% /boot
+/dev/loop2                            94080   94080         0 100% /snap/lxd/24061
+/dev/loop1                            51072   51072         0 100% /snap/snapd/18357
+/dev/loop0                            65024   65024         0 100% /snap/core20/1950
+/dev/loop3                            64896   64896         0 100% /snap/core20/1828
+/dev/loop4                            54656   54656         0 100% /snap/snapd/19457
+tmpfs                                201836       0    201836   0% /run/user/1000
+/dev/sdb1                           2024296      24   1903084   1% /home
+
+
+*****2*****
+notme@ubuntu-study:~$ sudo useradd -b /var/home/user user_with_group
+
+
+*****3*****
+notme@ubuntu-study:~$ sudo groupadd priv_group
+notme@ubuntu-study:~$ sudo usermod -g priv_group user_with_group
+
+
+*****4*****
+notme@ubuntu-study:~$ mkdir /tmp/dir_for_user
+notme@ubuntu-study:~$ sudo chown user_with_group:priv_group /tmp/dir_for_user/
+notme@ubuntu-study:~$ ls -la /tmp/dir_for_user/
+total 8
+drwxrwxr-x  2 user_with_group priv_group 4096 Jul  9 09:13 .
+drwxrwxrwt 13 root            root       4096 Jul  9 09:13 ..
+notme@ubuntu-study:~$ sudo chmod 770 /tmp/dir_for_user/
+notme@ubuntu-study:~$ sudo ls -la /tmp/dir_for_user/
+total 8
+drwxrwx---  2 user_with_group priv_group 4096 Jul  9 09:13 .
+drwxrwxrwt 13 root            root       4096 Jul  9 09:13 ..
+
+
+*****5*****
+notme@ubuntu-study:~$ sudo apt update
+notme@ubuntu-study:/etc/netplan$ sudo apt install chrony
+notme@ubuntu-study:~$ sudo usermod -aG sudo user_with_group
+
+
+*****6*****
+
+-
+
+
+*****7*****
+
+notme@ubuntu-study:~$ sudo chmod -x $(which chmod)
+
+notme@ubuntu-study:~$ ls -la /usr/bin/chmod
+-rw-r--r-- 1 root root 63864 Sep  5  2019 /usr/bin/chmod
+
+notme@ubuntu-study:~$ sudo /lib64/ld-linux-x86-64.so.2 /bin/chmod +x /bin/chmod
+notme@ubuntu-study:~$ ls -la /usr/bin/chmod
+-rwxr-xr-x 1 root root 63864 Sep  5  2019 /usr/bin/chmod
 
