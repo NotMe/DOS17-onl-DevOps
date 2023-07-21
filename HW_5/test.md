@@ -43,9 +43,9 @@ pid - 724
 -
 Закрыть все порты для входящих подключений, кроме ssh
 
-notme@ubuntu-study:~$ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
-notme@ubuntu-study:~$ sudo iptables -P INPUT DROP
-
+$ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+$ sudo iptables -P INPUT DROP
+-
 
 *****4*****
 -
