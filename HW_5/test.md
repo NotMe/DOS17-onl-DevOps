@@ -25,7 +25,7 @@ ICMP
 -
 Узнать pid процесса и длительность подключения ssh с помощью утилиты ss
 
-notme@ubuntu-study:~$ sudo ss -lpn | grep ssh | grep 0.0.0.0  && ss -atop
+$ sudo ss -lpn | grep ssh | grep 0.0.0.0  && ss -atop
 tcp     LISTEN   0        128                                           0.0.0.0:22                                               0.0.0.0:*                       users:(("sshd",pid=724,fd=3))              
 State                Recv-Q               Send-Q                               Local Address:Port                                 Peer Address:Port                Process
 LISTEN               0                    4096                                 127.0.0.53%lo:domain                                    0.0.0.0:*
