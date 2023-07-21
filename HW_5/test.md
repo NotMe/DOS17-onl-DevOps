@@ -17,10 +17,12 @@ TCP
 ICMP
 
 Уровень доступа к сети
+
 -
 
 
 *****2*****
+-
 Узнать pid процесса и длительность подключения ssh с помощью утилиты ss
 
 notme@ubuntu-study:~$ sudo ss -lpn | grep ssh | grep 0.0.0.0  && ss -atop
@@ -48,12 +50,14 @@ notme@ubuntu-study:~$ sudo iptables -P INPUT DROP
 Установить telnetd на ВМ, зайти на нее с другой ВМ с помощью telnet
 и отловить вводимый пароль и вводимые команды при входе c помощью tcpdump
 
-notme@ubuntu-study:~$ sudo apt install telnetd
+$ sudo apt install telnetd
+-
 
-notme@ubuntu-study:~$ cat /var/log/syslog | grep telnet
+$ cat /var/log/syslog | grep telnet
 Jul 14 10:46:50 ubuntu-study in.telnetd[347327]: connect from 10.0.0.20 (10.0.0.20)
+-
 
-notme@ubuntu-study:~/hw5$ sudo tcpdump port telnet -lA | egrep -i -B5 'password:|login:'
+$ sudo tcpdump port telnet -lA | egrep -i -B5 'password:|login:'
 tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
 listening on ens18, link-type EN10MB (Ethernet), capture size 262144 bytes
 ...
@@ -75,7 +79,7 @@ E..2y.@.@...
 11:51:23.334224 IP ubuntu-study.telnet > 10.0.0.20.58142: Flags [P.], seq 130:150, ack 91, win 502, length 20
 E..<y.@.@...
 ...
-
+-
 
 как привести в удобночитаемый формат - я не нашёл
 
