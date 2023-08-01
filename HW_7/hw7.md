@@ -345,3 +345,28 @@ git log -10 --oneline --graph
 | * b92d452 modified:   HW_7/README.md
 
 ```
+
+
+## 18
+
+Запушить ветку develop. В истории коммитов должен быть мерж support -> main.
+
+```
+git checkout develop
+
+git push origin develop
+
+git log -n 2
+commit e5479c865ac72cbc97b0a5b290362d8e9873ded3 (HEAD -> develop, origin/develop)
+Author: NotMe <belmymail@gmail.com>
+Date:   Tue Aug 1 17:47:08 2023 +0300
+
+    deleted:    LICENSE-2.0.txt
+
+commit 339940c09a8d3d24fced4c8dd5da1b166d216d64
+Merge: 3c34e38 5094239
+Author: NotMe <belmymail@gmail.com>
+Date:   Tue Aug 1 17:46:51 2023 +0300
+
+    Merge branches 'develop' and 'develop' of https://github.com/tms-dos17-onl/alexandr-nikiforov into develop
+```
