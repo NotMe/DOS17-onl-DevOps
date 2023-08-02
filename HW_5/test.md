@@ -40,11 +40,11 @@ pid - 724
 
 
 *****3*****
--
+``
 Закрыть все порты для входящих подключений, кроме ssh
 
 $ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT && sudo iptables -P INPUT DROP
--
+``
 
 *****4*****
 -
