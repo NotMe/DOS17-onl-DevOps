@@ -1,12 +1,14 @@
 #!/bin/bash
 
+sudo apt-get install openjdk-8-jre
+
 wget https://download.sonatype.com/nexus/3/nexus-3.58.1-02-unix.tar.gz
 
 sudo tar -xvzf nexus-3.58.1-02-unix.tar.gz
 
 sudo mv sonatype-work /opt
 
-sudo mv nexus-3.58.1-02 /opt/nexus
+sudo mv nexus-3* /opt/nexus
 
 if [ $(id -u) -eq 0 ]; then
 	username=nexus
@@ -28,26 +30,11 @@ fi
 sudo chown -R nexus:nexus /opt/nexus
 sudo chown -R nexus:nexus /opt/sonatype-work
 
-sed -i 's/# INSTALL4J_JAVA_HOME_OVERRIDE=/INSTALL4J_JAVA_HOME_OVERRIDE=\/usr\/lib\/jvm\/java-8-openjdk-amd64/' /opt/nexus/bin/nexus
+sed 's/#INSTALL4J_JAVA_HOME_OVERRIDE=/INSTALL4J_JAVA_HOME_OVERRIDE=/usr/lib/jvm/java-8-openjdk-amd64/' /opt/nexus/bin/nexus
 
 sudo echo "run_as_user="nexus"" >> /opt/nexus/bin/nexus.rc
 
-sudo echo "[Unit]
-Description=nexus service
-After=network.target
-
-[Service]
-Type=forking
-LimitNOFILE=65536
-User=nexus
-Group=nexus
-ExecStart=/opt/nexus/bin/nexus start
-ExecStop=/opt/nexus/bin/nexus stop
-User=nexus
-Restart=on-abort
-
-[Install]
-WantedBy=multi-user.target" >> /etc/systemd/system/nexus.service
+sudo mv nexus.service /etc/systemd/system/
 
 sudo systemctl start nexus
 

@@ -1,8 +1,8 @@
-Package: nexus
+Package: nexsus
 Version: 1.0
 Section: unknown
 Priority: optional
-Depends: bash, openjdk-8-jre, sed, systemd, wget
+Depends: bash, wget, mv, cat
 Architecture: all
 Essential: no
 Installed-Size: 20
