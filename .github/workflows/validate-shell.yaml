@@ -17,7 +17,7 @@ jobs:
       - name: Install shfmt
         run: sudo apt-get install shfmt -y
       - name: Run shfmt
-        run: shfmt -d .
+        run: shfmt -d -sr .
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
