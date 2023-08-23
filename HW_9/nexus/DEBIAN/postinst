@@ -11,7 +11,7 @@ sudo mv nexus-3.58.1-02 /opt/nexus
 if [ $(id -u) -eq 0 ]; then
 	username=nexus
 	password=nexus
-	egrep "^$username" /etc/passwd >/dev/null
+	egrep "^$username" /etc/passwd > /dev/null
 	if [ $? -eq 0 ]; then
 		echo "$username exists!"
 		exit 1

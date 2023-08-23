@@ -2,7 +2,7 @@
 
 sudo useradd -m $1
 
-sysinfo=/home/$1/sysinfo.info;
+sysinfo=/home/$1/sysinfo.info
 
 #echo $userhomedir
 

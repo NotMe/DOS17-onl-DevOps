@@ -1,15 +1,7 @@
 #!/bin/bash
 
-index=0
-
-while read file_name; do
-    file_array[$index]="$file_name"
-    echo ${file_array[$index]}
-    index=$(($index + 1))
-done
-
-for file in "${file_array[*]}"; do
-    if [[ $(wc -m ${file_array[$file]}) -gt 0 ]]; then
-        echo "${file_array[$file]}"
-    fi
+while read -r file_name; do
+	if [[ $(stat -c %s "$file_name") -gt 0 ]]; then
+		echo "$file_name"
+	fi
 done
