@@ -7,7 +7,8 @@ echo ' '
 mpstat | awk {'print $3,$4,$5,$6,$7,$8,$9,$10,$11,$12'} | sed 's/CPU/ЦП/g' | sed 's/usr/польз/g' | sed 's/sys/система/g' | column -t
 
 echo ' '
-ip -4 address | grep /24 | sed  's/inet/IP Адрес/g'
+ip -4 address | grep /24 | sed 's/inet/IP Адрес/g'
+
 
 
 *****2*****
@@ -16,15 +17,23 @@ sudo ./hw3_2.sh new_user
 #!/bin/bash
 
 sudo useradd -m $1
-sysinfo=/home/$1/sysinfo.info;
+
+sysinfo=/home/$1/sysinfo.info
+
+#echo $userhomedir
+
 echo ====****==== >> $sysinfo
 lscpu >> $sysinfo
+
 echo ====****==== >> $sysinfo
 lsblk >> $sysinfo
+
 echo ====****==== >> $sysinfo
 uname >> $sysinfo
+
 echo ====****==== >> $sysinfo
 df >> $sysinfo
+
 
 
 *****3*****
