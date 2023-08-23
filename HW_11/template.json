@@ -1,4 +1,0 @@
-{
-    "ServerUrl": "$SERVER_URL",
-    "DatabaseConnectionString": "$DB_CONNECTION_STRING"
-}
