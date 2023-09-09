@@ -1,0 +1,9 @@
+---
+mysql_root_password: "efCKEA12"
+mysql_db_name: "simple_lamp"
+app_user: "notme"
+http_host: "simple-lamp-master"
+http_conf: "simple-lamp-master.conf"
+http_port: "80"
+disable_default: true
+download_app_link: "https://github.com/qyjohn/simple-lamp/archive/refs/heads/master.zip"
