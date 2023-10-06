@@ -2,9 +2,21 @@
 - name: Roles Configuration
   hosts: servers
   become: yes
+
+  vars_files:
+    - ./vars/default.yml
+    - ./vars/apache.yml
+    - ./vars/mysql.yml
+    - ./vars/php.yml
+
+  tasks:
+    - name: Install additional packages
+      apt: name={{ item }} update_cache=yes state=latest
+      loop: [ 'python3-pymysql', 'php-mysql', 'libapache2-mod-php', 'libmemcached-tools', 'php-memcached' ]
+
   roles:
     - geerlingguy.apache
-    - geerlingguy.php
+    - geerlingguy.php  
     - geerlingguy.mysql
     - geerlingguy.memcached
     - simple-lamp
