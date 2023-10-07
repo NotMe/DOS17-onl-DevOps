@@ -6,20 +6,20 @@
     mode: '0755'
 
 - name: Download and unarchive zip simple-lamp-app
-  ansible.builtin.unarchive:
+  unarchive:
     src: "{{ download_app_link }}"
     dest: /var/www/
     remote_src: yes
 
 - name: Set up Apache virtualhost
   template:
-    src: "files/apache.conf.j2"
+    src: "templates/apache.conf.j2"
     dest: "/etc/apache2/sites-available/{{ http_conf }}"
   notify: Reload Apache
 
 - name: Set up config.php
-  ansible.builtin.template:
-    src: "files/config.php.j2"
+  template:
+    src: "templates/config.php.j2"
     dest: "/var/www/{{ http_host }}/config.php"
     
 - name: Enable new site
@@ -34,7 +34,7 @@
     force: true
 
 - name: Change directory ownership
-  ansible.builtin.file:
+  file:
     path: /var/www/{{ http_host }}/uploads
     owner: www-data
     group: www-data

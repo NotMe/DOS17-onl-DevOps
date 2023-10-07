@@ -36,12 +36,19 @@
     - include_tasks: install-simple-lamp-app.yml
 
   #installing memcached
-    - include_tasks: memcached.ylm
+    - include_tasks: memcached.yml
 
     - name: Disable default Apache site
       shell: /usr/sbin/a2dissite 000-default.conf
       when: disable_default
       notify: Reload Apache
+
+    - name: Change apache port
+      replace:
+        path: "/etc/apache2/ports.conf"
+        regexp: '^Listen 80'
+        replace: 'Listen {{ http_port }}'
+        backup: yes
 
   # UFW Configuration
     - name: "UFW - Allow HTTP on port {{ http_port }}"
@@ -53,7 +60,7 @@
   # PHP Info Page
     - name: Sets Up PHP Info Page
       template:
-        src: "files/info.php.j2"
+        src: "templates/info.php.j2"
         dest: "/var/www/{{ http_host }}/info.php"
 
   handlers:
