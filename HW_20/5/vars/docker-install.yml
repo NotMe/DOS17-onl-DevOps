@@ -1,0 +1,3 @@
+docker-nginx-php-mysql-git: "https://github.com/nanoninja/docker-nginx-php-mysql.git"
+docker-nginx-php-mysql-dest: "/tmp/docker-nginx-php-mysql"
+docker_install_compose: true

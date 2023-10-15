@@ -1,0 +1,49 @@
+---
+- name: Roles Configuration
+  hosts: servers
+  become: yes
+
+  vars_files:
+    - ./vars/docker-install.yml
+
+  tasks:
+    - name: Install git
+      apt: name={{ item }} update_cache=yes state=latest
+      loop: [ 'git' ]
+
+    - name: Clone repository
+      git:
+        repo: "{{ docker-nginx-php-mysql-git }}"
+        dest: "{{ docker-nginx-php-mysql-dest }}"
+
+    - name: copy file composer.json.dist
+      copy:
+        src: "{{ docker-nginx-php-mysql-dest }}/web/app/composer.json.dist"
+        dest: "{{ docker-nginx-php-mysql-dest }}/web/app/composer.json"
+        remote_src: yes
+
+    - name: Replace the default
+      replace:
+        path: "{{ docker-nginx-php-mysql-dest }}/.env"
+        regexp: '^PHP_VERSION=latest'
+        replace: 'PHP_VERSION=8.1'
+        backup: yes
+
+    - name: Deploy Docker Compose stack
+      become: True
+      shell:
+        cmd: "docker-compose up -d"
+        chdir: "{{ docker-nginx-php-mysql-dest }}"
+#      community.docker.docker_compose:
+#        project_src: /tmp/docker-nginx-php-mysql
+#        state: absent
+#        files:
+#        - docker-compose.yml
+
+#    - name: Recursively remove directory
+#      ansible.builtin.file:
+#        path: /tmp/docker-nginx-php-mysql
+#        state: absent
+
+  roles:
+    - geerlingguy.docker
