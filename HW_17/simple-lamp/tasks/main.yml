@@ -1,0 +1,34 @@
+- name: Change permition on simple_lamp_dest
+  file:
+    path: "{{ simple_lamp_dest }}"
+    state: directory
+    owner: "{{ app_user }}"
+    mode: '0755'
+
+- name: Clone simple_lamp repository
+  git:
+    repo: "{{ simple_lamp_git }}"
+    dest: "{{ simple_lamp_dest }}"
+
+- name: Restore database ignoring errors
+  community.mysql.mysql_db:
+    name: simple_lamp
+    state: import
+    target: /var/www/{{ servername }}/simple_lamp.sql
+    force: true
+
+- name: Set up config.php
+  template:
+    src: "templates/config.php.j2"
+    dest: "/var/www/{{ servername }}/config.php"
+
+- name: Change directory ownership
+  file:
+    path: /var/www/{{ servername }}/uploads
+    owner: www-data
+    group: www-data
+
+- name: Sets Up PHP Info Page
+  template:
+    src: "templates/info.php.j2"
+    dest: "/var/www/{{ servername }}/info.php"

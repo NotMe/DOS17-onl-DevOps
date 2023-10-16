@@ -1,0 +1,4 @@
+---
+simple_lamp_git: "https://github.com/qyjohn/simple-lamp.git"
+simple_lamp_dest: "/var/www/simple-lamp"
+app_user: "notme"
