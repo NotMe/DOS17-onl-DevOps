@@ -100,10 +100,11 @@ if [[ ! -d $VOLUME_HOME/mysql ]]; then
 	mysqld --initialize-insecure --innodb-flush-log-at-trx-commit=0 --skip-log-bin
 
 	# IF that didn't work
-#	if [ $? -ne 0 ]; then
-#		# Fall back to the 'depreciated' solution
-#		mysql_install_db > /dev/null 2>&1
-#	fi
+	# shellcheck disable=SC2181
+	if [ $? -ne 0 ]; then
+		# Fall back to the 'depreciated' solution
+		mysql_install_db > /dev/null 2>&1
+	fi
 
 	echo "=> Done!"
 	/create_mysql_users.sh
