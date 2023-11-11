@@ -20,13 +20,13 @@ function replace_apache_php_ini_values() {
 	echo "Updating for PHP $1"
 
 	sed -ri -e "s/^upload_max_filesize.*/upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}/" \
-		-e "s/^post_max_size.*/post_max_size = ${PHP_POST_MAX_SIZE}/" /etc/php/$1/apache2/php.ini
+		-e "s/^post_max_size.*/post_max_size = ${PHP_POST_MAX_SIZE}/" /etc/php/"$1"/apache2/php.ini
 
-	sed -i "s/;date.timezone =/date.timezone = Europe\/London/g" /etc/php/$1/apache2/php.ini
+	sed -i "s/;date.timezone =/date.timezone = Europe\/London/g" /etc/php/"$1"/apache2/php.ini
 
 }
 if [ -e /etc/php/5.6/apache2/php.ini ]; then replace_apache_php_ini_values "5.6"; fi
-if [ -e /etc/php/$PHP_VERSION/apache2/php.ini ]; then replace_apache_php_ini_values $PHP_VERSION; fi
+if [ -e /etc/php/"$PHP_VERSION"/apache2/php.ini ]; then replace_apache_php_ini_values "$PHP_VERSION"; fi
 
 #######################################
 # Use sed to replace cli php.ini values for a given PHP version.
@@ -39,10 +39,10 @@ if [ -e /etc/php/$PHP_VERSION/apache2/php.ini ]; then replace_apache_php_ini_val
 #######################################
 function replace_cli_php_ini_values() {
 	echo "Replacing CLI php.ini values"
-	sed -i "s/;date.timezone =/date.timezone = Europe\/London/g" /etc/php/$1/cli/php.ini
+	sed -i "s/;date.timezone =/date.timezone = Europe\/London/g" /etc/php/"$1"/cli/php.ini
 }
 if [ -e /etc/php/5.6/cli/php.ini ]; then replace_cli_php_ini_values "5.6"; fi
-if [ -e /etc/php/$PHP_VERSION/cli/php.ini ]; then replace_cli_php_ini_values $PHP_VERSION; fi
+if [ -e /etc/php/"$PHP_VERSION"/cli/php.ini ]; then replace_cli_php_ini_values "$PHP_VERSION"; fi
 
 echo "Editing APACHE_RUN_GROUP environment variable"
 sed -i "s/export APACHE_RUN_GROUP=www-data/export APACHE_RUN_GROUP=staff/" /etc/apache2/envvars
@@ -64,9 +64,9 @@ chmod -R 770 /var/run/mysqld
 
 if [ -n "$VAGRANT_OSX_MODE" ]; then
 	echo "Setting up users and groups"
-	usermod -u $DOCKER_USER_ID www-data
-	groupmod -g $(($DOCKER_USER_GID + 10000)) $(getent group $DOCKER_USER_GID | cut -d: -f1)
-	groupmod -g ${DOCKER_USER_GID} staff
+	usermod -u "$DOCKER_USER_ID" www-data
+	groupmod -g $(("$DOCKER_USER_GID" + 10000)) "$(getent group "$DOCKER_USER_GID" | cut -d: -f1)"
+	groupmod -g "${DOCKER_USER_GID}" staff
 else
 	echo "Allowing Apache/PHP to write to the app"
 	# Tweaks to give Apache/PHP write permissions to the app
@@ -100,10 +100,10 @@ if [[ ! -d $VOLUME_HOME/mysql ]]; then
 	mysqld --initialize-insecure --innodb-flush-log-at-trx-commit=0 --skip-log-bin
 
 	# IF that didn't work
-	if [ $? -ne 0 ]; then
-		# Fall back to the 'depreciated' solution
-		mysql_install_db > /dev/null 2>&1
-	fi
+#	if [ $? -ne 0 ]; then
+#		# Fall back to the 'depreciated' solution
+#		mysql_install_db > /dev/null 2>&1
+#	fi
 
 	echo "=> Done!"
 	/create_mysql_users.sh
