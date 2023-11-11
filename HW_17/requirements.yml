@@ -1,0 +1,6 @@
+---
+roles:
+  - geerlingguy.apache
+  - geerlingguy.php  
+  - geerlingguy.mysql
+  - geerlingguy.memcached
