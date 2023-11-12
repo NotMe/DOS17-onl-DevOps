@@ -1,0 +1,39 @@
+pipeline {
+    agent { label 'proxmox' }
+    
+    parameters {
+        string(name: "branchName", defaultValue: "main")
+//        string(name: "repoOrigUrl", defaultValue: "https://github.com/spring-projects/spring-petclinic.git")
+        string(name: "repoTMSUrl", defaultValue: "https://github.com/tms-dos17-onl/spring-petclinic.git")
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                dir('spring-petclinic'){
+                    sh 'touch testfile'
+                    sh 'rm -R *'
+                    git branch: params.branchName, credentialsId: 'github_token', url: params.repoTMSUrl
+                    sh 'ls -lah'
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('spring-petclinic') {
+                    sh 'ls -lah'
+                    sh './mvnw package'
+                    sh './mvnw spring-boot:build-image'
+                }
+                
+            }
+        }
+    }
+    
+    post {
+        always {
+            junit 'spring-petclinic/target/surefire-reports/*.xml'
+        }
+    }
+}
