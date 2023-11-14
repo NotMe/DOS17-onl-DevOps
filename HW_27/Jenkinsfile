@@ -1,0 +1,90 @@
+pipeline {
+    agent { label 'proxmox' }
+    
+    parameters {
+        string(name: 'branchName', defaultValue: 'main')
+        string(name: 'repoTMSUrl', defaultValue: 'https://github.com/tms-dos17-onl/spring-petclinic.git')
+    }
+    
+    stages {
+        stage('Clone') {
+            steps {
+                dir('spring-petclinic'){
+                    sh 'rm -Rf *'
+                    git branch: params.branchName, credentialsId: 'github_token', url: params.repoTMSUrl
+                    sh 'ls -lah'
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('spring-petclinic') {
+                    sh '''
+                        ls -lah
+                        ./mvnw package
+                        ./mvnw test
+                    '''
+                    stash(name: 'petclinic', includes: 'target/*.jar')
+                }
+                
+            }
+        }
+        
+        stage ('PARALLEL') {
+            parallel {
+                stage('Integration Tests') {
+                    agent {
+                        docker {
+                            image 'maven:3.9.3-eclipse-temurin-17'
+                            label 'digital-ocean'
+                            args '-p 8080:8080'
+                        }
+                    }
+                    steps {
+                        unstash 'petclinic'
+                        sh '''
+                            ls -lah
+                            pwd
+                            mvn --version
+                            java -jar target/*.jar &
+                            sleep 50
+                        '''
+                        echo 'Hello, Maven'
+                    }
+                }
+                
+                stage('Curl digital-ocean') {
+                    agent { label 'proxmox' }
+                    steps {
+                        script {
+                            final String url = "http://143.198.140.17:8080"
+                            //можно как-то определить внешний IP ноды и подставить в переменную url
+                            final String response = sh(script: "curl -s --retry-connrefused --retry 10 --retry-delay 10 $url", returnStdout: true).trim()
+        
+                            echo response
+                        }
+                    }
+                }
+                    
+            }
+            
+        }
+        
+        stage('Publish') {
+            steps {
+                dir('spring-petclinic') {
+                    archiveArtifacts artifacts: 'target/*.jar'
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            junit 'spring-petclinic/target/surefire-reports/*.xml'
+        }
+    }
+
+}
