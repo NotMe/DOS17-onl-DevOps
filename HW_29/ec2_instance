@@ -1,0 +1,159 @@
+PS C:\Windows\system32> aws --version
+aws-cli/2.13.37 Python/3.11.6 Windows/10 exe/AMD64 prompt/off
+
+PS C:\Windows\system32> aws configure
+AWS Access Key ID [None]: AKIAUP{}{}{}{}{}{}
+AWS Secret Access Key [None]: uWt8iEs1bU9C0I{}{}{}{}{}{}{}{}{}
+Default region name [None]: eu-north-1
+Default output format [None]: json
+
+PS C:\Windows\system32>  aws ec2 run-instances
+
+An error occurred (MissingParameter) when calling the RunInstances operation: The request must contain the parameter ImageId
+PS C:\Windows\system32> aws ec2 describe-instances
+{
+    "Reservations": [
+        {
+            "Groups": [],
+            "Instances": [
+                {
+                    "AmiLaunchIndex": 0,
+                    "ImageId": "ami-0416c18e75bd69567",
+                    "InstanceId": "i-0eb796e731c788766",
+                    "InstanceType": "t3.micro",
+                    "KeyName": "aws_tms.notme",
+                    "LaunchTime": "2023-11-19T12:44:06+00:00",
+                    "Monitoring": {
+                        "State": "disabled"
+                    },
+                    "Placement": {
+                        "AvailabilityZone": "eu-north-1a",
+                        "GroupName": "",
+                        "Tenancy": "default"
+                    },
+                    "PrivateDnsName": "ip-172-31-16-226.eu-north-1.compute.internal",
+                    "PrivateIpAddress": "172.31.16.226",
+                    "ProductCodes": [],
+                    "PublicDnsName": "ec2-51-20-141-103.eu-north-1.compute.amazonaws.com",
+                    "PublicIpAddress": "51.20.141.103",
+                    "State": {
+                        "Code": 16,
+                        "Name": "running"
+                    },
+                    "StateTransitionReason": "",
+                    "SubnetId": "subnet-0477c7730994fdd5c",
+                    "VpcId": "vpc-03256e37de7235c2a",
+                    "Architecture": "x86_64",
+                    "BlockDeviceMappings": [
+                        {
+                            "DeviceName": "/dev/xvda",
+                            "Ebs": {
+                                "AttachTime": "2023-11-19T12:44:07+00:00",
+                                "DeleteOnTermination": true,
+                                "Status": "attached",
+                                "VolumeId": "vol-0535749a7a1d80352"
+                            }
+                        }
+                    ],
+                    "ClientToken": "754a709f-cbd4-4a0a-8543-0d4a4c52ccbe",
+                    "EbsOptimized": true,
+                    "EnaSupport": true,
+                    "Hypervisor": "xen",
+                    "NetworkInterfaces": [
+                        {
+                            "Association": {
+                                "IpOwnerId": "amazon",
+                                "PublicDnsName": "ec2-51-20-141-103.eu-north-1.compute.amazonaws.com",
+                                "PublicIp": "51.20.141.103"
+                            },
+                            "Attachment": {
+                                "AttachTime": "2023-11-19T12:44:06+00:00",
+                                "AttachmentId": "eni-attach-03f6c3e71c8dd498c",
+                                "DeleteOnTermination": true,
+                                "DeviceIndex": 0,
+                                "Status": "attached",
+                                "NetworkCardIndex": 0
+                            },
+                            "Description": "",
+                            "Groups": [
+                                {
+                                    "GroupName": "launch-wizard-1",
+                                    "GroupId": "sg-00e415dd74245ea83"
+                                }
+                            ],
+                            "Ipv6Addresses": [],
+                            "MacAddress": "06:a8:7b:fc:72:54",
+                            "NetworkInterfaceId": "eni-0a2a3edd665e91c4b",
+                            "OwnerId": "308284338648",
+                            "PrivateDnsName": "ip-172-31-16-226.eu-north-1.compute.internal",
+                            "PrivateIpAddress": "172.31.16.226",
+                            "PrivateIpAddresses": [
+                                {
+                                    "Association": {
+                                        "IpOwnerId": "amazon",
+                                        "PublicDnsName": "ec2-51-20-141-103.eu-north-1.compute.amazonaws.com",
+                                        "PublicIp": "51.20.141.103"
+                                    },
+                                    "Primary": true,
+                                    "PrivateDnsName": "ip-172-31-16-226.eu-north-1.compute.internal",
+                                    "PrivateIpAddress": "172.31.16.226"
+                                }
+                            ],
+                            "SourceDestCheck": true,
+                            "Status": "in-use",
+                            "SubnetId": "subnet-0477c7730994fdd5c",
+                            "VpcId": "vpc-03256e37de7235c2a",
+                            "InterfaceType": "interface"
+                        }
+                    ],
+                    "RootDeviceName": "/dev/xvda",
+                    "RootDeviceType": "ebs",
+                    "SecurityGroups": [
+                        {
+                            "GroupName": "launch-wizard-1",
+                            "GroupId": "sg-00e415dd74245ea83"
+                        }
+                    ],
+                    "SourceDestCheck": true,
+                    "VirtualizationType": "hvm",
+                    "CpuOptions": {
+                        "CoreCount": 1,
+                        "ThreadsPerCore": 2
+                    },
+                    "CapacityReservationSpecification": {
+                        "CapacityReservationPreference": "open"
+                    },
+                    "HibernationOptions": {
+                        "Configured": false
+                    },
+                    "MetadataOptions": {
+                        "State": "applied",
+                        "HttpTokens": "required",
+                        "HttpPutResponseHopLimit": 2,
+                        "HttpEndpoint": "enabled",
+                        "HttpProtocolIpv6": "disabled",
+                        "InstanceMetadataTags": "disabled"
+                    },
+                    "EnclaveOptions": {
+                        "Enabled": false
+                    },
+                    "BootMode": "uefi-preferred",
+                    "PlatformDetails": "Linux/UNIX",
+                    "UsageOperation": "RunInstances",
+                    "UsageOperationUpdateTime": "2023-11-19T12:44:06+00:00",
+                    "PrivateDnsNameOptions": {
+                        "HostnameType": "ip-name",
+                        "EnableResourceNameDnsARecord": true,
+                        "EnableResourceNameDnsAAAARecord": false
+                    },
+                    "MaintenanceOptions": {
+                        "AutoRecovery": "default"
+                    },
+                    "CurrentInstanceBootMode": "uefi"
+                }
+            ],
+            "OwnerId": "308284338648",
+            "ReservationId": "r-0e411903ee2c81886"
+        }
+    ]
+}
