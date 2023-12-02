@@ -1,0 +1,271 @@
+Started by user admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on EC2 (aws_tms.notme) - jenkins-node (i-05dde4a184d7c0a20) in /tmp/workspace/aws-pipline
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build image)
+[Pipeline] dir
+Running in /tmp/workspace/aws-pipline/textual-web
+[Pipeline] {
+[Pipeline] sh
++ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
++ echo 
+                        FROM python:3.11.2-slim 
+                        RUN apt update && apt install -y git && rm -rf ~/.cache/* /usr/local/share/man /tmp/* 
+                        RUN pip3 install pipx && pipx ensurepath && pipx install textual-web 
+                        EXPOSE 443 
+                        CMD ["/root/.local/bin/textual-web"] 
++ docker build . -t tms.notme
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 12.04kB done
+#1 DONE 0.0s
+
+#2 [internal] load .dockerignore
+#2 transferring context: 2B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11.2-slim
+#3 DONE 0.4s
+
+#4 [stage-33 1/3] FROM docker.io/library/python:3.11.2-slim@sha256:2f749ef90f54fd4b3c77cde78eec23ab5b8199d9ac84e4ced6ae523ef223ef7b
+#4 DONE 0.0s
+
+#5 [stage-33 2/3] RUN apt update && apt install -y git && rm -rf ~/.cache/* /usr/local/share/man /tmp/*
+#5 CACHED
+
+#6 [stage-33 3/3] RUN pip3 install pipx && pipx ensurepath && pipx install textual-web
+#6 CACHED
+
+#7 exporting to image
+#7 exporting layers done
+#7 writing image sha256:68c10f6b9bf2bc3aa09e34902ff5a1e8b0e4bf4dd49e741c381c68783281a9aa done
+#7 naming to docker.io/library/tms.notme done
+#7 DONE 0.0s
++ docker images
+REPOSITORY                                                TAG       IMAGE ID       CREATED       SIZE
+nginx                                                     latest    68c10f6b9bf2   3 hours ago   342MB
+tms.notme                                                 latest    68c10f6b9bf2   3 hours ago   342MB
+308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme   latest    68c10f6b9bf2   3 hours ago   342MB
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Pull image to ECR)
+[Pipeline] withAWS
+Constructing AWS CredentialsSetting AWS region eu-north-1 
+ [Pipeline] {
+[Pipeline] sh
++ aws sts get-caller-identity
+{
+    "UserId": "AIDAUPRZNWHMNYEQBMJDT",
+    "Account": "308284338648",
+    "Arn": "arn:aws:iam::308284338648:user/Jenkins-EC2-ECR-ECS"
+}
++ docker login --username AWS --password-stdin 308284338648.dkr.ecr.eu-north-1.amazonaws.com
++ aws ecr get-login-password --region eu-north-1
+WARNING! Your password will be stored unencrypted in /home/admin/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
++ docker tag tms.notme:latest 308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme:latest
++ docker push 308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme:latest
+The push refers to repository [308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme]
+e2d845c5de46: Preparing
+622a2380cc5f: Preparing
+2ba468180822: Preparing
+93148d48dd44: Preparing
+bc5a91e8433a: Preparing
+219c6c2423f1: Preparing
+3af14c9a24c9: Preparing
+219c6c2423f1: Waiting
+3af14c9a24c9: Waiting
+622a2380cc5f: Layer already exists
+2ba468180822: Layer already exists
+e2d845c5de46: Layer already exists
+93148d48dd44: Layer already exists
+bc5a91e8433a: Layer already exists
+219c6c2423f1: Layer already exists
+3af14c9a24c9: Layer already exists
+latest: digest: sha256:600776e15c375079f246f91653a42f88e7fec01bfcaa8fe35accfb02341e66d1 size: 1794
+[Pipeline] }
+[Pipeline] // withAWS
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish image to EC2-ECS)
+[Pipeline] withAWS
+Constructing AWS CredentialsSetting AWS region eu-north-1 
+ [Pipeline] {
+[Pipeline] sh
++ aws sts get-caller-identity
+{
+    "UserId": "AIDAUPRZNWHMNYEQBMJDT",
+    "Account": "308284338648",
+    "Arn": "arn:aws:iam::308284338648:user/Jenkins-EC2-ECR-ECS"
+}
++ aws ecs create-cluster --cluster-name ECS-EC2-CLUSTER
+{
+    "cluster": {
+        "clusterArn": "arn:aws:ecs:eu-north-1:308284338648:cluster/ECS-EC2-CLUSTER",
+        "clusterName": "ECS-EC2-CLUSTER",
+        "status": "ACTIVE",
+        "registeredContainerInstancesCount": 0,
+        "runningTasksCount": 1,
+        "pendingTasksCount": 0,
+        "activeServicesCount": 0,
+        "statistics": [],
+        "tags": [],
+        "settings": [
+            {
+                "name": "containerInsights",
+                "value": "disabled"
+            }
+        ],
+        "capacityProviders": [],
+        "defaultCapacityProviderStrategy": []
+    }
+}
++ aws ecs register-task-definition --family jenkins-fargate-task-definition --cpu 256 --memory 512 --execution-role-arn ecsTaskExecutionRole --network-mode awsvpc --container-definitions [{"name": "tms_notme", "image": "308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme:latest", "essential": true, "portMappings":                         [{"containerPort": 80, "hostPort": 80, "protocol": "tcp", "name": "80-tcp"}]}]
+{
+    "taskDefinition": {
+        "taskDefinitionArn": "arn:aws:ecs:eu-north-1:308284338648:task-definition/jenkins-fargate-task-definition:23",
+        "containerDefinitions": [
+            {
+                "name": "tms_notme",
+                "image": "308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme:latest",
+                "cpu": 0,
+                "portMappings": [
+                    {
+                        "containerPort": 80,
+                        "hostPort": 80,
+                        "protocol": "tcp",
+                        "name": "80-tcp"
+                    }
+                ],
+                "essential": true,
+                "environment": [],
+                "mountPoints": [],
+                "volumesFrom": []
+            }
+        ],
+        "family": "jenkins-fargate-task-definition",
+        "executionRoleArn": "arn:aws:iam::308284338648:role/ecsTaskExecutionRole",
+        "networkMode": "awsvpc",
+        "revision": 23,
+        "volumes": [],
+        "status": "ACTIVE",
+        "requiresAttributes": [
+            {
+                "name": "com.amazonaws.ecs.capability.ecr-auth"
+            },
+            {
+                "name": "ecs.capability.execution-role-ecr-pull"
+            },
+            {
+                "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+            },
+            {
+                "name": "ecs.capability.task-eni"
+            }
+        ],
+        "placementConstraints": [],
+        "compatibilities": [
+            "EC2",
+            "FARGATE"
+        ],
+        "cpu": "256",
+        "memory": "512",
+        "registeredAt": "2023-12-02T13:38:29.817000+00:00",
+        "registeredBy": "arn:aws:iam::308284338648:user/Jenkins-EC2-ECR-ECS"
+    }
+}
++ aws ecs describe-task-definition --task-definition jenkins-fargate-task-definition
++ sed s/,//
++ awk {print $2}
++ egrep revision
++ taskRevision=23
++ echo 23
+23
++ aws ecs run-task --cluster ECS-EC2-CLUSTER --launch-type FARGATE --platform-version LATEST --task-definition jenkins-fargate-task-definition:23 --network-configuration {"awsvpcConfiguration":                         {"subnets": ["subnet-0477c7730994fdd5c", "subnet-0d4c689678b766983", "subnet-0daf8885380750124"],                         "securityGroups": ["sg-01dbbfab2c2141a30"],                         "assignPublicIp": "ENABLED"}}
+{
+    "tasks": [
+        {
+            "attachments": [
+                {
+                    "id": "bd165abf-aedc-408c-b8c2-b32091205061",
+                    "type": "ElasticNetworkInterface",
+                    "status": "PRECREATED",
+                    "details": [
+                        {
+                            "name": "subnetId",
+                            "value": "subnet-0477c7730994fdd5c"
+                        }
+                    ]
+                }
+            ],
+            "attributes": [
+                {
+                    "name": "ecs.cpu-architecture",
+                    "value": "x86_64"
+                }
+            ],
+            "availabilityZone": "eu-north-1a",
+            "clusterArn": "arn:aws:ecs:eu-north-1:308284338648:cluster/ECS-EC2-CLUSTER",
+            "containers": [
+                {
+                    "containerArn": "arn:aws:ecs:eu-north-1:308284338648:container/ECS-EC2-CLUSTER/2f55c8f21cf84e2091eda2a1d60d3306/049146df-224e-4b2e-b20e-aa92705ef155",
+                    "taskArn": "arn:aws:ecs:eu-north-1:308284338648:task/ECS-EC2-CLUSTER/2f55c8f21cf84e2091eda2a1d60d3306",
+                    "name": "tms_notme",
+                    "image": "308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme:latest",
+                    "lastStatus": "PENDING",
+                    "networkInterfaces": [],
+                    "cpu": "0"
+                }
+            ],
+            "cpu": "256",
+            "createdAt": "2023-12-02T13:38:32.033000+00:00",
+            "desiredStatus": "RUNNING",
+            "enableExecuteCommand": false,
+            "group": "family:jenkins-fargate-task-definition",
+            "lastStatus": "PROVISIONING",
+            "launchType": "FARGATE",
+            "memory": "512",
+            "overrides": {
+                "containerOverrides": [
+                    {
+                        "name": "tms_notme"
+                    }
+                ],
+                "inferenceAcceleratorOverrides": []
+            },
+            "platformVersion": "1.4.0",
+            "platformFamily": "Linux",
+            "tags": [],
+            "taskArn": "arn:aws:ecs:eu-north-1:308284338648:task/ECS-EC2-CLUSTER/2f55c8f21cf84e2091eda2a1d60d3306",
+            "taskDefinitionArn": "arn:aws:ecs:eu-north-1:308284338648:task-definition/jenkins-fargate-task-definition:23",
+            "version": 1,
+            "ephemeralStorage": {
+                "sizeInGiB": 20
+            }
+        }
+    ],
+    "failures": []
+}
+[Pipeline] }
+[Pipeline] // withAWS
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

@@ -1,0 +1,90 @@
+pipeline {
+    agent { label 'aws' }
+    
+    environment {
+        AWS_ECR_REGION = 'eu-north-1'
+        AWS_ECS_SERVICE = 'ECS-EC2-CLUSTER'
+        AWS_ECS_TASK_DEFINITION = 'jenkins-fargate-task-definition'
+        AWS_ECS_COMPATIBILITY = 'FARGATE'
+        AWS_ECS_CPU = '256'
+        AWS_ECS_MEMORY = '512'
+        AWS_ECS_CLUSTER = 'ECS-EC2-CLUSTER'
+        AWS_ECR_REPO_NAME = 'tms.notme'
+        AWS_ECR_IMAGE = '308284338648.dkr.ecr.eu-north-1.amazonaws.com/tms.notme:latest'
+//        AWS_ECR_IMAGE = 'nginx:latest'
+    }
+    
+    stages {
+        stage('Build image') {
+            steps {
+                dir('textual-web') {
+                    sh '''
+                        docker ps -a
+                        echo '
+                        FROM python:3.11.2-slim \n\
+                        RUN apt update && apt install -y git && rm -rf ~/.cache/* /usr/local/share/man /tmp/* \n\
+                        RUN pip3 install pipx && pipx ensurepath && pipx install textual-web \n\
+                        EXPOSE 443 \n\
+                        CMD ["/root/.local/bin/textual-web"] ' >> Dockerfile
+                        docker build . -t tms.notme
+                        docker images
+                    '''
+                }
+            }
+        }
+            
+        stage('Pull image to ECR') {
+            steps {
+                withAWS(credentials: 'Jenkins-EC2-ECR-ECS', region: "${AWS_ECR_REGION}") {
+                    sh '''
+                        aws sts get-caller-identity
+                        
+                        aws ecr get-login-password --region "${AWS_ECR_REGION}" | docker login --username AWS --password-stdin 308284338648.dkr.ecr.eu-north-1.amazonaws.com
+                        
+                        docker tag "${AWS_ECR_REPO_NAME}":latest "${AWS_ECR_IMAGE}"
+                        
+                        docker push "${AWS_ECR_IMAGE}"
+                    '''
+                }
+            }
+        }
+        
+        stage('Publish image to EC2-ECS') {
+            steps {
+                withAWS(credentials: 'Jenkins-EC2-ECR-ECS', region: "${AWS_ECR_REGION}") {
+                    sh '''
+                        aws sts get-caller-identity
+                        
+                        aws ecs create-cluster --cluster-name "${AWS_ECS_SERVICE}"
+                        
+                        aws ecs register-task-definition \
+                        --family "${AWS_ECS_TASK_DEFINITION}" \
+                        --cpu "${AWS_ECS_CPU}" \
+                        --memory "${AWS_ECS_MEMORY}" \
+                        --execution-role-arn "ecsTaskExecutionRole" \
+                        --network-mode "awsvpc" \
+                        --container-definitions \
+                        '[{\"name\": \"tms_notme\", \"image\": \"'${AWS_ECR_IMAGE}'\", \"essential\": true, \"portMappings\": \
+                        [{\"containerPort\": 80, \"hostPort\": 80, \"protocol\": \"tcp\", \"name\": \"80-tcp\"}]}]'
+                        
+                        taskRevision=$(aws ecs describe-task-definition \
+                        --task-definition "${AWS_ECS_TASK_DEFINITION}" | egrep \"revision\" | awk '{print $2}' | sed 's/,//')
+                        
+                        echo $taskRevision
+
+                        aws ecs run-task \
+                        --cluster "${AWS_ECS_SERVICE}" \
+                        --launch-type "${AWS_ECS_COMPATIBILITY}" \
+                        --platform-version "LATEST" \
+                        --task-definition "${AWS_ECS_TASK_DEFINITION}":"${taskRevision}" \
+                        --network-configuration \
+                        '{\"awsvpcConfiguration\": \
+                        {\"subnets\": [\"subnet-0477c7730994fdd5c\", \"subnet-0d4c689678b766983\", \"subnet-0daf8885380750124\"], \
+                        \"securityGroups\": [\"sg-01dbbfab2c2141a30\"], \
+                        \"assignPublicIp\": \"ENABLED\"}}'
+                    '''
+                }
+            }
+        }
+    }
+}
