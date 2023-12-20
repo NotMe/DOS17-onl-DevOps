@@ -3,21 +3,20 @@ variable "access_key" {}
 variable "secret_key" {}
 
 variable "machine_type" {
-  type = string
+  type    = string
   default = "t3.micro"
 }
 
-variable "zone" {
-  type = string
+variable "region" {
+  type    = string
   default = "eu-north-1"
 }
 
-variable "enable_public_ip" {
-  type = bool
-  default = true
+variable "zone" {
+  default = ["eu-north-1a", "eu-north-1b", "eu-north-1c"]
 }
 
-//machine_type
-//zone
-//enable_public_ip
-//image_family и image_project
+variable "enable_public_ip" {
+  type    = bool
+  default = false
+}

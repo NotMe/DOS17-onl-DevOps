@@ -16,42 +16,51 @@ terraform {
 }
 
 provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
-  region  = "${var.zone}"
+  access_key = var.access_key
+  secret_key = var.secret_key
+  region     = var.region
 }
 
 resource "aws_instance" "my_server" {
-  ami           = "ami-067f3514568fd5760"
-  instance_type = "${var.machine_type}"
-  associate_public_ip_address = "${var.enable_public_ip}"
-//  vpc_security_group_ids = [aws_security_group.my_server.id]
+  ami                         = data.aws_ami.latest_ami_amazon_2023.id
+  instance_type               = var.machine_type
+  associate_public_ip_address = var.enable_public_ip
+  availability_zone           = var.zone[0]
+  vpc_security_group_ids      = [aws_security_group.HW_35_SG.id]
+  key_name                    = "aws_tms.notme"
 
   tags = {
     Name = "HW_35"
   }
 }
 
-/*resource "aws_security_group" "my_server" {
-  name = "My security group"
-
-  dynamic "ingress" {
-    for_each = ["22", "80", "443"]
-    content {
-      from_port = ingress.value
-      to_port = ingress.value
-      protocol = "tcp"
-      cidr_blocks = ["0.0.0.0"]
-    }
-
-  data "http" "myip" {
+data "http" "myip" {
   url = "https://ipv4.icanhazip.com"
 }
-ingress {
-  from_port = 5432
-  to_port = 5432
-  protocol = "tcp"
-  cidr_blocks = ["${chomp(data.http.myip.body)}/32"]
-}  
+
+data "aws_ami" "latest_ami_amazon_2023"{
+  owners = [ "137112412989" ]
+  most_recent = true
+  filter {
+    name = "name"
+    values = [ "al2023-ami-2023.*-x86_64" ]
   }
-}*/
+}
+
+resource "aws_security_group" "HW_35_SG" {
+  name = "HW_35_SG"
+
+  dynamic "ingress" {
+    for_each = var.enable_public_ip == true ? [1] : []
+    content {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
+    }
+  }
+
+  tags = {
+    Name = "HW_35_SG"
+  }
+}
